@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حساب مؤشر كتلة الجسم برعاية دكتوره عبير زيان</title>
+  <style>
+    :root {
+      --blue: #0ea5e9;   /* أزرق */
+      --yellow: #facc15; /* أصفر */
+      --black: #0b0f19;  /* أسود داكن */
+      --panel: #111827;  /* لوح داكن */
+      --muted: #94a3b8;  /* نص ثانوي */
+      --text: #e5e7eb;   /* نص فاتح */
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Kufi Arabic", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 80% -10%, rgba(14,165,233,.25), transparent),
+                  radial-gradient(800px 400px at -10% 110%, rgba(250,204,21,.15), transparent),
+                  var(--black);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+
+    .card {
+      width: min(880px, 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      overflow: hidden;
+    }
+
+    .header {
+      position: relative;
+      background: linear-gradient(135deg, var(--blue), var(--black));
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header .brand-dot {
+      width: 14px; height: 14px; border-radius: 50%; background: var(--yellow);
+      box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.2);
+    }
+    .header h1 {
+      margin: 0; font-size: clamp(20px, 3vw, 28px); font-weight: 800; letter-spacing: .3px;
+    }
+    .header p { margin: 4px 0 0; color: #e2e8f0; font-size: 14px; }
+
+    .content { padding: 24px; background: rgba(17,24,39,0.75); }
+
+    form { display: grid; gap: 18px; grid-template-columns: 1fr; }
+
+    .inputs { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    label { font-size: 14px; color: var(--muted); margin-bottom: 6px; display: inline-block; }
+
+    .field { background: #0f172a; border: 1px solid rgba(148,163,184,.25); border-radius: 12px; padding: 10px 12px; transition: border-color .2s, box-shadow .2s; }
+    .field:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(14,165,233,.25); }
+
+    .unit { font-size: 12px; color: var(--muted); margin-inline-start: 6px; }
+
+    .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
+    button {
+      border: 0; cursor: pointer;
+      background: linear-gradient(180deg, var(--yellow), #eab308);
+      color: #111827; font-weight: 800; letter-spacing: .3px;
+      padding: 12px 16px; border-radius: 12px; min-width: 220px;
+      transition: transform .06s ease, box-shadow .2s ease;
+      box-shadow: 0 10px 18px rgba(250,204,21,.25);
+    }
+    button:active { transform: translateY(1px); }
+
+    .secondary { background: #0f172a; color: var(--text); border: 1px solid rgba(148,163,184,.25); box-shadow: none; }
+
+    .result { margin-top: 22px; display: none; }
+
+    .result-card {
+      background: linear-gradient(180deg, rgba(14,165,233,.08), rgba(14,165,233,.03));
+      border: 1px solid rgba(14,165,233,.35);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+    .kpi .box { background: #0b1220; border: 1px solid rgba(148,163,184,.18); border-radius: 12px; padding: 14px; }
+    .kpi .value { font-size: 24px; font-weight: 900; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 999px; padding: 6px 12px; font-weight: 700; letter-spacing: .2px; margin-top: 8px;
+      background: #0f172a; border: 1px solid rgba(148,163,184,.25);
+    }
+    .badge .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .category-under { border-color: rgba(14,165,233,.6); background: rgba(14,165,233,.08); }
+    .category-under .dot { background: var(--blue); }
+    .category-normal { border-color: rgba(34,197,94,.6); background: rgba(34,197,94,.08); }
+    .category-normal .dot { background: var(--ok); }
+    .category-over { border-color: rgba(245,158,11,.6); background: rgba(245,158,11,.08); }
+    .category-over .dot { background: var(--warn); }
+    .category-obese { border-color: rgba(239,68,68,.6); background: rgba(239,68,68,.08); }
+    .category-obese .dot { background: var(--danger); }
+
+    .tip { margin-top: 12px; line-height: 1.8; }
+
+    .footer-note { margin-top: 14px; font-size: 12px; color: var(--muted); }
+
+    .error { color: #fecaca; background: #450a0a; border: 1px solid #7f1d1d; padding: 10px 12px; border-radius: 10px; display: none; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <section class="card" aria-labelledby="title">
+    <div class="header">
+      <div class="brand-dot" aria-hidden="true"></div>
+      <div>
+        <h1 id="title">حساب مؤشر كتلة الجسم <span style="color:var(--yellow)">برعاية دكتوره عبير زيان</span></h1>
+        <p>أدخل وزنك وطولك لتحصل على BMI ونصيحة سريعة. الألوان مستوحاة من الأزرق والأصفر والأسود.</p>
+      </div>
+    </div>
+
+    <div class="content">
+      <form id="bmiForm" novalidate>
+        <div class="inputs">
+          <div>
+            <label for="weight">الوزن <span class="unit">(كجم)</span></label>
+            <input id="weight" class="field" type="number" inputmode="decimal" min="1" step="0.1" placeholder="مثال: 72.5" required />
+            <div class="hint">اكتب وزنك بالكيلوجرام.</div>
+          </div>
+          <div>
+            <label for="height">الطول <span class="unit">(سم)</span></label>
+            <input id="height" class="field" type="number" inputmode="decimal" min="30" step="0.1" placeholder="مثال: 175" required />
+            <div class="hint">اكتب طولك بالسنتيمتر.</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="calcBtn">احسب مؤشر كتلة الجسم</button>
+          <button type="button" class="secondary" id="resetBtn" title="إعادة ضبط المدخلات">تفريغ الحقول</button>
+        </div>
+
+        <div id="err" class="error" role="alert"></div>
+
+        <div id="result" class="result" aria-live="polite">
+          <div class="result-card">
+            <div class="grid-2">
+              <div>
+                <h3 style="margin:0 0 4px;">النتيجة</h3>
+                <div class="kpi">
+                  <div class="box">
+                    <div class="label" style="color:var(--muted);">BMI</div>
+                    <div class="value" id="bmiValue">—</div>
+                  </div>
+                  <div class="box">
+                    <div class="label" style="color:var(--muted);">التصنيف</div>
+                    <div>
+                      <span class="badge" id="categoryBadge"><span class="dot"></span><span id="categoryText">—</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 style="margin:0 0 4px;">الوزن الصحي التقريبي لطولك</h3>
+                <div class="kpi">
+                  <div class="box">
+                    <div class="label" style="color:var(--muted);">من</div>
+                    <div class="value" id="idealMin">—</div>
+                  </div>
+                  <div class="box">
+                    <div class="label" style="color:var(--muted);">إلى</div>
+                    <div class="value" id="idealMax">—</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="tip" id="advice">—</p>
+            <p class="footer-note">تنبيه: هذه الأداة للتثقيف الصحي فقط ولا تُغني عن استشارة الطبيب أو اختصاصي التغذية.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById('bmiForm');
+    const weightEl = document.getElementById('weight');
+    const heightEl = document.getElementById('height');
+    const errEl = document.getElementById('err');
+    const resultWrap = document.getElementById('result');
+    const bmiValueEl = document.getElementById('bmiValue');
+    const categoryBadge = document.getElementById('categoryBadge');
+    const categoryText = document.getElementById('categoryText');
+    const idealMinEl = document.getElementById('idealMin');
+    const idealMaxEl = document.getElementById('idealMax');
+    const adviceEl = document.getElementById('advice');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function setBadge(cat) {
+      categoryBadge.className = 'badge';
+      if (cat.key === 'under') categoryBadge.classList.add('category-under');
+      if (cat.key === 'normal') categoryBadge.classList.add('category-normal');
+      if (cat.key === 'over') categoryBadge.classList.add('category-over');
+      if (cat.key === 'obese') categoryBadge.classList.add('category-obese');
+    }
+
+    function formatKg(n) { return `${n.toFixed(1)} كجم`; }
+
+    function getCategory(bmi) {
+      if (bmi < 18.5) return { key: 'under', label: 'نحافة' };
+      if (bmi < 25) return { key: 'normal', label: 'طبيعي' };
+      if (bmi < 30) return { key: 'over', label: 'زيادة وزن' };
+      return { key: 'obese', label: 'سمنة' };
+    }
+
+    function getAdvice(key) {
+      switch (key) {
+        case 'under':
+          return 'وزنك أقل من الطبيعي. ركّز على تغذية متوازنة غنية بالبروتين والسعرات، وزُر اختصاصي تغذية إذا لزم.';
+        case 'normal':
+          return 'وزنك ضمن النطاق الصحي. حافظ على نمط حياة نشط (150 دقيقة نشاط أسبوعياً) وتغذية متوازنة.';
+        case 'over':
+          return 'هناك زيادة وزن. فكّر في تقليل 300–500 سعرة يومياً وزيادة الحركة التدريجية مع متابعة القياسات.';
+        case 'obese':
+          return 'السمنة قد تزيد مخاطر أمراض القلب والسكري. ابدأ بخطة غذائية ونشاط منتظم واستشر مختصاً لوضع خطة مناسبة.';
+      }
+    }
+
+    function calcIdealRange(hMeters) {
+      const min = 18.5 * hMeters * hMeters;
+      const max = 24.9 * hMeters * hMeters;
+      return [min, max];
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      errEl.style.display = 'none';
+
+      const w = parseFloat(weightEl.value.replace(',', '.'));
+      const hCm = parseFloat(heightEl.value.replace(',', '.'));
+
+      if (!isFinite(w) || !isFinite(hCm)) {
+        errEl.textContent = 'من فضلك أدخل أرقاماً صحيحة للوزن والطول.';
+        errEl.style.display = 'block';
+        resultWrap.style.display = 'none';
+        return;
+      }
+      if (w <= 0 || hCm <= 0) {
+        errEl.textContent = 'القيم يجب أن تكون أكبر من الصفر.';
+        errEl.style.display = 'block';
+        resultWrap.style.display = 'none';
+        return;
+      }
+      const h = hCm / 100; // إلى أمتار
+      const bmi = w / (h * h);
+
+      // حمايات من القيم غير الواقعية
+      if (h < 0.5 || h > 2.5 || w < 20 || w > 300) {
+        errEl.textContent = 'تأكد من أن المدخلات ضمن نطاقات منطقية.';
+        errEl.style.display = 'block';
+        resultWrap.style.display = 'none';
+        return;
+      }
+
+      const cat = getCategory(bmi);
+      setBadge(cat);
+
+      bmiValueEl.textContent = bmi.toFixed(1);
+      categoryText.textContent = cat.label;
+      adviceEl.textContent = getAdvice(cat.key);
+
+      const [minW, maxW] = calcIdealRange(h);
+      idealMinEl.textContent = formatKg(minW);
+      idealMaxEl.textContent = formatKg(maxW);
+
+      resultWrap.style.display = 'block';
+      // تمرير بسيط للنتيجة
+      setTimeout(() => resultWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      weightEl.value = '';
+      heightEl.value = '';
+      errEl.style.display = 'none';
+      resultWrap.style.display = 'none';
+      weightEl.focus();
+    });
+
+    // اختصار: Enter على أي حقل = حساب
+    [weightEl, heightEl].forEach(el => el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('calcBtn').click();
+      }
+    }));
+  </script>
+</body>
+</html>
